@@ -45,6 +45,7 @@ file.close()
 #create a table for our Cost_Space_Launches
 create_table = '''CREATE TABLE cost_space_launches('Entity', 'Code', 'Year', 'cost_per_kg', 'launch_class')'''
 
+
 cur.execute(create_table)
 con.commit()
 
@@ -57,6 +58,8 @@ insert_records = '''INSERT INTO cost_space_launches('Entity', 'Code', 'Year', 'c
                     VALUES(?,?,?,?,?)'''
 
 cur.executemany(insert_records, contents)
+drop_column = '''ALTER TABLE cost_space_launches DROP Code;'''
+cur.execute(drop_column)
 
 con.commit()
 file.close()
@@ -76,47 +79,12 @@ insert_records = '''INSERT INTO cumulative_exoplanets('Entity', 'Code', 'Year', 
                     VALUES(?,?,?,?)'''
 
 cur.executemany(insert_records, contents)
+drop_column = '''ALTER TABLE cumulative_exoplanets DROP Code;'''
+cur.execute(drop_column)
 
 con.commit()
 file.close()
 
-#create a table for our Cumulative_Gravitational_Wave
-create_table = '''CREATE TABLE cumulative_gravitational_wave('Entity', 'Code', 'Year', 'cumulative_gwt')'''
-
-cur.execute(create_table)
-con.commit()
-
-file = open('cumulative-gravitational-wave-observations.csv')
-contents = csv.reader(file)
-
-users_headers = print(next(contents))
-
-insert_records = '''INSERT INTO cumulative_gravitational_wave('Entity', 'Code', 'Year', 'cumulative_gwt')
-                    VALUES(?,?,?,?)'''
-
-cur.executemany(insert_records, contents)
-
-con.commit()
-file.close()
-
-#create a table for our Cumulative_Objects_In_Space
-create_table = '''CREATE TABLE cumulative_objects_in_space('Entity', 'Code', 'Year', 'cumulative_number_of_objects_launched_into_outer_space')'''
-
-cur.execute(create_table)
-con.commit()
-
-file = open('cumulative-number-of-objects-launched-into-outer-space.csv')
-contents = csv.reader(file)
-
-users_headers = print(next(contents))
-
-insert_records = '''INSERT INTO cumulative_objects_in_space('Entity', 'Code', 'Year', 'cumulative_number_of_objects_launched_into_outer_space')
-                    VALUES(?,?,?,?)'''
-
-cur.executemany(insert_records, contents)
-
-con.commit()
-file.close()
 
 #create a table for our Cumulative_People_Space
 create_table = '''CREATE TABLE cumulative_people_space('Entity', 'Code', 'Year', 'cumulative_individuals')'''
@@ -171,6 +139,9 @@ insert_records = '''INSERT INTO largest_impact_craters('Entity', 'Code', 'Year',
                     VALUES(?,?,?,?)'''
 
 cur.executemany(insert_records, contents)
+drop_column = '''ALTER TABLE largest_impact_craters DROP Code;'''
+cur.execute(drop_column)
+
 
 con.commit()
 file.close()
@@ -190,6 +161,9 @@ insert_records = '''INSERT INTO leo_objects('Entity', 'Code', 'Year', 'objects_i
                     VALUES(?,?,?,?)'''
 
 cur.executemany(insert_records, contents)
+drop_column = '''ALTER TABLE leo_objects DROP Code;'''
+cur.execute(drop_column)
+
 
 con.commit()
 file.close()
@@ -247,6 +221,9 @@ insert_records = '''INSERT INTO space_objects_by_orbit('Entity', 'Code', 'Year',
                     VALUES(?,?,?,?)'''
 
 cur.executemany(insert_records, contents)
+drop_column = '''ALTER TABLE space_objects_by_orbit DROP Code;'''
+cur.execute(drop_column)
+
 
 con.commit()
 file.close()
@@ -266,9 +243,13 @@ insert_records = '''INSERT INTO objects_launched_in_space('Entity', 'Code', 'Yea
                     VALUES(?,?,?,?)'''
 
 cur.executemany(insert_records, contents)
+drop_column = '''ALTER TABLE objects_launched_in_space DROP Code;'''
+cur.execute(drop_column)
+
 
 con.commit()
 file.close()
-
 con.close()
+
+
 

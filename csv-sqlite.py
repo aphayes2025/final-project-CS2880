@@ -1,5 +1,6 @@
 import sqlite3 # included in standard python distribution
 import csv
+# test commit
 
 #connect or create if doesn’t exist (same folder)
 con = sqlite3.connect('SpaceExplore.db')

@@ -158,8 +158,156 @@ def view_data():
     
 
 def modify_data():
-    print("placeholder")
+    # setting vars
+    conn = sqlite3.connect('SpaceExplore.db')
+    cur = conn.cursor()
 
+    # getting the ui 
+    print("How would you like to modify the data? 1) Add 2) Remove 3) Modify ")
+    ui = str(input("=> "))
+
+    # make sure user is entering the correct 
+    while (ui != '1' and ui != '2' and ui != '3'):
+        print("Sorry, Incorrect input. Please pick 1,2,3.")
+        ui = input( "=> ")
+
+    # add
+    if ui == "1":
+        # getting the ui
+        print("What table would you like to add to?")
+        table_choice = str(input("=> "))
+        statement = f'''PRAGMA table_info({table_choice});'''
+        cur.execute(statement)
+
+        # getting all the columns names
+        lst = cur.fetchall()
+        column_tuple = tuple(lst)
+        column_lst = []
+        for i in range(len(lst)):
+            column_lst.append(lst[i][1])
+
+        column_tuple = tuple(column_lst)
+        print(f"Values Required: {column_lst}")
+        print("Please enter the values you want for this table with each value separated by a dash")
+        print("Ex: Entity-Year-Objects_launched")
+        user_values = str(input("=> "))
+        lst_values = user_values.split("-")
+
+        values = ""
+        comma_stopper = len(lst_values)
+        for i in range(len(lst_values)):
+            if comma_stopper - 1 != i:
+                values += f"'{lst_values[i]}',"
+            else:
+                values += f"'{lst_values[i]}'"
+
+        insert_statement = f'''INSERT INTO {table_choice} {column_tuple} VALUES ({values});'''
+        try:
+            cur.execute(insert_statement)
+        except sqlite3.OperationalError:
+            print("Table does not exist or values inputted incorrectly")
+        print("Great Success!")
+        print()
+        conn.commit()
+
+    elif ui == "2":
+       # getting the ui
+        print("What table would you like to remove from?")
+        table_choice = str(input("=> "))
+        statement = f'''PRAGMA table_info({table_choice});'''
+        cur.execute(statement)
+
+        # getting all the columns names
+        lst = cur.fetchall()
+        column_tuple = tuple(lst)
+        column_lst = []
+        for i in range(len(lst)):
+            column_lst.append(lst[i][1])
+
+        # asking user what they want to remove on 
+        print(f"Values Required: {column_lst}")
+        print("Please enter the values you want for this table with each value separated by a dash")
+        print("Ex for objects launched table: Algeria-1985-4")
+        user_values = str(input("=> "))
+        lst_values = user_values.split("-")
+
+        # converting inputs into a usable delete statement and then executing it
+        values = ""
+        comma_stopper = len(lst_values)
+        try:
+            for i in range(len(lst_values)):
+                if comma_stopper - 1 != i:
+                    values += f"{column_lst[i]}='{lst_values[i]}' AND "
+                else:
+                    values += f"{column_lst[i]}='{lst_values[i]}'"
+        except IndexError:
+            print("Incorrect amount of inputs")
+        else:
+            insert_statement = f'''DELETE FROM {table_choice} WHERE {values};'''        
+            try:
+                cur.execute(insert_statement)
+            except sqlite3.OperationalError:
+                print("Table does not exist or values inputted incorrectly")
+            else:
+                print("Great Success!")
+                print()
+                conn.commit()
+
+    elif ui == "3":
+        # getting the ui
+        print("What table would you like to modify?")
+        table_choice = str(input("=> "))
+        statement = f'''PRAGMA table_info({table_choice});'''
+        cur.execute(statement)
+
+        # getting all the columns names
+        lst = cur.fetchall()
+        column_tuple = tuple(lst)
+        column_lst = []
+        for i in range(len(lst)):
+            column_lst.append(lst[i][1])
+
+        column_tuple = tuple(column_lst)
+        print(f"Values Required: {column_lst}")
+        print("Please enter the values you want to set for table with each value separated by a dash")
+        print("Ex: Entity-Year-Objects_launched")
+        user_values = str(input("=> "))
+        lst_values = user_values.split("-")
+        
+        # getting values for the set 
+        set_values = ""
+        comma_stopper = len(lst_values)
+        for i in range(len(lst_values)):
+            if comma_stopper - 1 != i:
+                set_values += f"{column_lst[i]}='{lst_values[i]}',"
+            else:
+                set_values += f"{column_lst[i]}='{lst_values[i]}'"
+
+        # getting values for the where condition
+        print(f"Values Required: {column_lst}")
+        print("Please enter the values you want for the WHERE condition for table with each value separated by a dash")
+        print("Ex: Entity-Year-Objects_launched")
+        user_values = str(input("=> "))
+        lst_values = user_values.split("-")
+        where_values = ""
+        comma_stopper = len(lst_values)
+        for i in range(len(lst_values)):
+            if comma_stopper - 1 != i:
+                where_values += f"{column_lst[i]}='{lst_values[i]}' AND "
+            else:
+                where_values += f"{column_lst[i]}='{lst_values[i]}'"
+
+        # insert statement 
+        insert_statement = f'''UPDATE {table_choice} SET {set_values} WHERE {where_values};'''
+        try:
+            cur.execute(insert_statement)
+        except sqlite3.OperationalError:
+            print("Table does not exist or values inputted incorrectly")
+        print("Great Success!")
+        print()
+        conn.commit() 
+
+    
 
 def stat_queries():
     print("placeholder")

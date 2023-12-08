@@ -319,7 +319,90 @@ def stat_queries():
     conn = sqlite3.connect('SpaceExplore.db')
     cur = conn.cursor()
 
+    # showing all tables
+    statement = '''SELECT name FROM sqlite_schema WHERE type='table' ORDER BY name;'''
+    cur.execute(statement)
+    lst = (cur.fetchall())
+    col_lst = []
+    print("Tables to Choose from.")
+    for i in range(len(lst)):
+        col_lst.append(lst[i][0])
+        print(lst[i][0])
     
+    # finding what table the user wants
+    print("What table would you like to make a query on?")
+    ui_table =  str(input("=>"))
+
+    # ui validation
+    while ui_table not in col_lst:
+        print("Not valid option. Options are: ")
+        print(col_lst)
+        print("What table would you like to make a query on?")
+        ui_table =  str(input("=>"))
+
+    # find what column they want to do the query on
+    print("What column would you like to make a statistical query?")
+    statement = f'''PRAGMA table_info({ui_table});'''
+    cur.execute(statement)
+
+    # getting all the columns names
+    lst = cur.fetchall()
+    column_lst = []
+
+    for i in range(len(lst)):
+        print(lst[i][1])
+        column_lst.append(lst[i][1])
+
+    # getting user column
+    ui_column = str(input("=> "))
+    while ui_column not in column_lst:
+        print("Not valid option. Options are: ")
+        print(column_lst)
+        print("What column would you like to make a query on?")
+        ui_column = str(input("=>"))
+
+    # finding what statistical query the user wants
+    print("What statistical query would you like to make?")
+    print("(a) mean, (b) min, (c) max, (d) median, (e) standard dev")
+    ui = str(input("=> "))
+    uil = ui.lower()
+    
+    # validating input
+    while uil != 'a' and uil != 'b' and uil != 'c' and uil != 'd' and uil != 'e':
+        print("Incorrect choice, try again.")
+        print("(a) mean, (b) min, (c) max, (d) median, (e) standard dev")
+        ui = str(input("=> "))
+        uil = ui.lower()
+
+    # calculating mean
+    if uil == 'a':
+        statement = f'''SELECT AVG({ui_column}) from {ui_table}'''
+        cur.execute(statement)
+        num = cur.fetchall()[0][0]
+        print(f"Mean {ui_column} is {num:.2f}")
+
+    # calculating min
+    elif uil == 'b':
+        statement = f'''SELECT MIN({ui_column}) from {ui_table}'''
+        cur.execute(statement)
+        num = cur.fetchall()[0][0]
+        print(f"Min {ui_column} is {num:.2f}")
+
+    # calculating max
+    elif uil == 'c':
+        statement = f'''SELECT MAX({ui_column}) from {ui_table}'''
+        cur.execute(statement)
+        num = cur.fetchall()[0][0]
+        print(f"Max {ui_column} is {num:.2f}")
+    
+    # calculating median (TODO)
+    elif uil == 'd':
+        statement = f''''''
+    
+    # calculating standard dev
+    elif uil == 'e':
+        statement = f''''''
+        
 def data_viz():
     # setting vars
     conn = sqlite3.connect('SpaceExplore.db')

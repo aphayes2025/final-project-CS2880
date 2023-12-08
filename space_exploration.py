@@ -1,6 +1,6 @@
 import sqlite3 # included in standard python distribution
 import pandas as pd
-
+import matplotlib.pyplot as plt
 #connect or create if doesn’t exist (same folder)
 con = sqlite3.connect('SpaceExplore.db')
 
@@ -12,13 +12,15 @@ def main():
         print(" a) View Data")
         print(" b) Modify Data")
         print(" c) Statistical Queries")
-        print(" d) Exit")
+        print(" d) Data visualization")
+        print(" e) Exit")
         
         main_menu_input = input("=> ")
         while (main_menu_input != 'a' and main_menu_input != 'A' and
                main_menu_input != 'b' and main_menu_input != 'B' and 
                main_menu_input != 'c' and main_menu_input != 'C' and
-               main_menu_input != 'd' and main_menu_input != 'D'):
+               main_menu_input != 'd' and main_menu_input != 'D' and 
+               main_menu_input != 'e' and main_menu_input != 'E'):
             main_menu_input = input("=> ")
 
         if (main_menu_input == 'a' or main_menu_input == 'A'):
@@ -29,8 +31,10 @@ def main():
 
         if (main_menu_input == 'c' or main_menu_input == 'C'):
             stat_queries()
-        
         if (main_menu_input == 'd' or main_menu_input == 'D'):
+            data_viz()
+    
+        if (main_menu_input == 'e' or main_menu_input == 'E'):
             keep_playing = False
             print("\nHave a good day!")
 
@@ -186,6 +190,7 @@ def modify_data():
         for i in range(len(lst)):
             column_lst.append(lst[i][1])
 
+        # asking user what values they want to add for 
         column_tuple = tuple(column_lst)
         print(f"Values Required: {column_lst}")
         print("Please enter the values you want for this table with each value separated by a dash")
@@ -310,7 +315,104 @@ def modify_data():
     
 
 def stat_queries():
-    print("placeholder")
+    # setting vars
+    conn = sqlite3.connect('SpaceExplore.db')
+    cur = conn.cursor()
+
+    
+def data_viz():
+    # setting vars
+    conn = sqlite3.connect('SpaceExplore.db')
+    cur = conn.cursor()
+
+    # intro 
+    print("We have two options of graphs to show you!")
+    print("Would you like to see a graph of the NASA annual budget or Amount of near earth asteroids discovered.")
+    print("(1) for NASA annual budget or (2) for near earth asteroids discovered")
+
+    # validating input
+    ui = str(input("=> "))
+    while ui != '1' and ui != '2':
+        print("Incorrect option, try again!")
+        ui = str(input("=> "))
+
+    # nasa data viz
+    if ui == '1':
+        # setting vars
+        x_values = []
+        y_values = []
+
+        # getting x values
+        x_statement = """SELECT year from nasa_annual_budget"""
+        cur.execute(x_statement)
+        lst = cur.fetchall()
+        for i in range(0, len(lst), 10):
+            x_values.append(lst[i][0])
+
+        # getting y values
+        y_statement = '''SELECT budget from nasa_annual_budget'''
+        cur.execute(y_statement)
+        lst2 = cur.fetchall()
+        for i in range(0, len(lst2), 10):
+            num = float(lst2[i][0])
+            y_values.append(int(num))
+    
+        # plotting bar graph
+        plt.bar(x_values, y_values)
+        plt.xlabel('Years')
+        plt.ylabel('Budget (In Billions)')
+        plt.title("NASA Annual budget increase")
+        plt.ylim(2000000000,23500000000)
+        plt.show()
+
+    # asteroids
+    else:
+        # setting vars
+        x_values = []
+        y_values_small = []
+        y_values_med = []
+        y_values_large = []
+
+        # getting x values
+        select_statement = '''SELECT YEAR from near_earth_asteroids_over_time'''
+        cur.execute(select_statement)
+        lst = cur.fetchall()
+        for i in range(11, len(lst), 2):
+            x_values.append(lst[i][0])
+
+        # getting first line
+        select_statement = '''SELECT smaller_than_140m from near_earth_asteroids_over_time'''
+        cur.execute(select_statement)
+        lst2 = cur.fetchall()
+        for i in range(11, len(lst2), 2):
+            num = int(lst2[i][0])
+            y_values_small.append(num)
+
+        # getting second line
+        select_statement = '''SELECT between_140m_and_1km from near_earth_asteroids_over_time'''
+        cur.execute(select_statement)
+        lst2 = cur.fetchall()
+        for i in range(11, len(lst2), 2):
+            num = int(lst2[i][0])
+            y_values_med.append(num)
+
+        # getting third line
+        select_statement = '''SELECT larger_than_1km from near_earth_asteroids_over_time'''
+        cur.execute(select_statement)
+        lst2 = cur.fetchall()
+        for i in range(11, len(lst2), 2):
+            num = int(lst2[i][0])
+            y_values_large.append(num)
+
+        # line graoh
+        plt.plot(x_values, y_values_small , label="small")
+        plt.plot(x_values, y_values_med, label="Medium")
+        plt.plot(x_values, y_values_large, label="Large")
+        plt.legend(loc="upper left")
+        plt.xlabel('Years')
+        plt.ylabel('Amount of asteroids')
+        plt.title("Near Earth Asteroids discovered (by size) ")
+        plt.show()
 
 if __name__ == "__main__":
     main()
